@@ -6,9 +6,8 @@ from application.ports.driving.services.builder_service_port import BuilderServi
 
 class BuilderServiceUseCase(BuilderServicePort):
 
-    def __init__(self, chatgpt_repository: AIRepositoryPort, logger: Logger):
+    def __init__(self, chatgpt_repository: AIRepositoryPort):
         self.chatgpt_repository = chatgpt_repository
-        self.logger = logger
 
-    def create(self):
-        return self.chatgpt_repository.create()
+    def create(self, json_input):
+        return self.chatgpt_repository.create(json_input=json_input)
