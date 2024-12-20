@@ -17,27 +17,24 @@ class ChatGPTAdapter(AIRepositoryPort):
         self.client = OpenAI(
             api_key=os.environ.get(os.environ.get('OPENAI_API_KEY')),
         )
-        self.processor = CodeProcessor()
         self.conversation_history = []
 
-    def generate_code(self, prompt):
+    def generate_code(self, prompt, tech):
         """
         Genera código usando el modelo GPT.
         """
         try:
             self.conversation_history.append({"role": "user", "content": prompt})
-
             response = self.client.chat.completions.create(
                 model="gpt-4o",
                 messages=[
                     {"role": "system",
-                     "content": "Eres un asistente que genera código para arquitecturas clean en iOS."}
-                ] + self.conversation_history,  # Incluye el historial de conversación
-                max_tokens=1000,
+                     "content": f"Eres un asistente que genera código para arquitecturas clean en {tech}."}
+                ] + self.conversation_history,
+                max_tokens=3000,
                 temperature=0.5
             )
 
-            # Agregar la respuesta del modelo al historial
             response_content = response.choices[0].message.content.strip()
             self.conversation_history.append({"role": "assistant", "content": response_content})
 
@@ -63,12 +60,12 @@ class ChatGPTAdapter(AIRepositoryPort):
         with open(file_path, "w") as file:
             file.write(content)
 
-    def create_prompts(self, json_input):
+    def create_prompts(self, json_input, tech):
         """
         Crea los prompts necesarios para las capas de la arquitectura clean.
         """
-        domain_prompt = self.read_file("driven/ai/chatgpt/prompts/ios/domain.prompt")
-        data_prompt = self.read_file("driven/ai/chatgpt/prompts/ios/data.prompt")
+        domain_prompt = self.read_file(f"driven/ai/chatgpt/prompts/{tech}/domain.prompt")
+        data_prompt = self.read_file(f"driven/ai/chatgpt/prompts/{tech}/data.prompt")
         return {
             "Domain": f"Dado el siguiente JSON: {json_input} {domain_prompt}",
             "Data": f"Dado el siguiente JSON: {json_input}, {data_prompt}",
@@ -79,15 +76,15 @@ class ChatGPTAdapter(AIRepositoryPort):
         with open(file_path, 'r') as file:
             return file.read()
 
-    def create(self, json_input):
+    def create(self, json_input, tech):
         """
         Genera las clases y las guarda en las carpetas correspondientes.
         """
         self.create_directories()
-
-        prompts = self.create_prompts(json_input)
+        processor = CodeProcessor(tech)
+        prompts = self.create_prompts(json_input, tech)
         for layer, prompt in prompts.items():
             print(f"Generando código para la capa {layer}...")
-            result = self.generate_code(prompt)
-            self.processor.process_and_create_files(result)
+            result = self.generate_code(prompt, tech)
+            processor.process_and_create_files(result)
         print(f"Archivos generados en la carpeta '{self.BASE_OUTPUT_PATH}'.")
