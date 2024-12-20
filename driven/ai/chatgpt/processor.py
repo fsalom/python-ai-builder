@@ -5,16 +5,26 @@ from pathlib import Path
 class CodeProcessor:
     BASE_OUTPUT_PATH = "output_clean_architecture"
 
-    def __init__(self):
+    technology = {"android": "kotlin",
+                  "ios": "swift"}
+
+    def __init__(self, tech):
         Path(self.BASE_OUTPUT_PATH).mkdir(parents=True, exist_ok=True)
+        self.tech = tech
 
     def process_response(self, response):
         """
         Procesa la respuesta generada para extraer bloques de código y comentarios ###,
         y crea las carpetas y archivos correspondientes.
         """
-        # Encuentra todos los comentarios ### y bloques de código que los siguen
-        matches = re.findall(r"(### (.*?)\n```swift\n(.*?)\n```)", response, re.DOTALL)
+        tech = re.escape(self.technology[self.tech])
+
+        # Usar el valor escapado en la regex
+        matches = re.findall(
+            rf"(##### (.*?)\n```{tech}\n(.*?)\n```)",
+            response,
+            re.DOTALL
+        )
         if not matches:
             print("No se encontraron bloques de código en la respuesta.")
             return
