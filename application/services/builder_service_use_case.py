@@ -9,5 +9,5 @@ class BuilderServiceUseCase(BuilderServicePort):
     def __init__(self, chatgpt_repository: AIRepositoryPort):
         self.chatgpt_repository = chatgpt_repository
 
-    def create(self, json_input):
-        return self.chatgpt_repository.create(json_input=json_input)
+    def create(self, json_input, tech):
+        return self.chatgpt_repository.create(json_input=json_input, tech=tech)
