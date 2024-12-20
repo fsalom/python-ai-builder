@@ -6,7 +6,7 @@ from driven.ai.chatgpt.adapter import ChatGPTAdapter
 
 class BuilderContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
-    wiring_config = containers.WiringConfiguration(modules=["driving.api.v1.builder"])
+    wiring_config = containers.WiringConfiguration(modules=["driving.api.v1.builder.adapter"])
     chatgpt_repository = providers.Factory(ChatGPTAdapter)
 
     service = providers.Factory(
