@@ -1,0 +1,99 @@
+Primero de todo extrae cuantos tags tiene este swagger. A partir de este momento estos tags son la base para construir
+el resto de cosas. Por cada tag se debe de crear lo siguiente:
+
+Utilizando la información generada anteriormente. Genera la clase repositorio basado en la interface generada.
+Genera los protocolos de los datasources y su implementación con las llamadas al endpoint definido en el swagger.
+
+Cada uno de las clases o protocolos deben de estar en un bloque de código distinto. Encima del inicio del bloque tiene que
+indicarse el nombre del fichero (#####DIRECTORIOS/NOMBREFICHERO) y la carpeta a la que corresponde. Las carpetas son:
+Data/DataSources, Data/Repositories
+Quiero que todas las funciones sean con suspend.
+
+Los endpoints se van a describir en un interface que acaba en Api como este ejemplo:
+interface EstablishmentApi {
+    @GET("/api/restaurants/verify_restaurants")
+    suspend fun isListByCity(): Response<ListByCityDto>
+
+    @GET("/api/restaurants")
+    suspend fun getEstablishments(
+        @Query("service_id") serviceId: Int
+    ): Response<List<EstablishmentDto>>
+
+    @GET("/api/restaurants")
+    suspend fun getEstablishmentsByCities(
+        @Query("service_id") serviceId: Int
+    ): Response<List<CityDto>>
+}
+
+Se debe de crear los dtos necesarios para cada llamada en una carpeta dto dentro del datasource correspondiente al tag
+correspondiente
+
+y la implementación de cada datasource tiene que seguir esta estructura. Cada tag debe de tener su datasource interface
+y su implementación. La implementación debe estar basada en:
+
+class EstablishmentRemoteDataSourceImpl @Inject constructor(
+    private val networkMoshiMoshi: NetworkMoshiMoshi
+) : EstablishmentDataSource {
+    private val establishmentApi = networkMoshiMoshi.instance.create(EstablishmentApi::class.java)
+
+    override suspend fun getEstablishmentsByCities(serviceId: Int): List<CityDto> {
+        return networkMoshiMoshi.instance.load { establishmentApi.getEstablishmentsByCities(serviceId) }
+    }
+
+    override suspend fun getEstablishments(serviceId: Int): List<EstablishmentDto> {
+        return networkMoshiMoshi.instance.load { establishmentApi.getEstablishments(serviceId) }
+    }
+
+    override suspend fun isListByCity(): ListByCityDto {
+        return networkMoshiMoshi.instance.load { establishmentApi.isListByCity() }
+    }
+}
+
+El repositorio de cada tag es el que tiene que contener un mapper para convertir los objetos de DTO a entidad como este ejemplo:
+
+class EstablishmentRepositoryImpl(
+    @Named("remote") private val establishmentRemoteDataSource: EstablishmentDataSource,
+    private val errorHandler: ErrorHandler
+) : EstablishmentRepository {
+    override suspend fun getEstablishmentsByCities(serviceId: Int): List<City> {
+        try {
+            return establishmentRemoteDataSource.getEstablishmentsByCities(serviceId).map { it.toDomain() }
+        } catch (e: Exception) {
+            throw errorHandler.handle(e)
+        }
+    }
+
+    override suspend fun getEstablishments(serviceId: Int): List<Establishment> {
+        try {
+            return establishmentRemoteDataSource.getEstablishments(serviceId).map { it.toDomain() }
+        } catch (e: Exception) {
+            throw errorHandler.handle(e)
+        }
+    }
+
+    override suspend fun isListByCity(): Boolean {
+        try {
+            return establishmentRemoteDataSource.isListByCity().isListByCity
+        } catch (e: Exception) {
+            throw errorHandler.handle(e)
+        }
+    }
+
+    private fun CityDto.toDomain() =
+        City(
+            id = id,
+            name = name,
+            establishments = establishments?.map { it.toDomain() } ?: emptyList()
+        )
+
+    private fun EstablishmentDto.toDomain() =
+        Establishment(
+            id = id,
+            name = name,
+            address = address.orEmpty(),
+            image = image.orEmpty(),
+            phone = phone.orEmpty()
+        )
+}
+
+Debes crear todos los ficheros para todos los tags
