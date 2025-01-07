@@ -5,7 +5,7 @@ Utilizando la información generada anteriormente. Genera la clase repositorio b
 Genera los protocolos de los datasources y su implementación con las llamadas al endpoint definido en el swagger.
 
 Cada uno de las clases o protocolos deben de estar en un bloque de código distinto. Encima del inicio del bloque tiene que
-indicarse el nombre del fichero (#####DIRECTORIOS/NOMBREFICHERO) y la carpeta a la que corresponde. Las carpetas son:
+indicarse el nombre del fichero (#####Directorio/NombreFichero) y la carpeta a la que corresponde. Las carpetas son:
 Data/DataSources, Data/Repositories
 Quiero que todas las funciones sean con suspend.
 
