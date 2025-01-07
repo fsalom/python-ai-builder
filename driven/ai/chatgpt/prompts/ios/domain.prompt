@@ -1,8 +1,30 @@
-Genera las clases de dominio necesarias para representar las entidades en una arquitectura clean en swift.
+Primero de todo extrae cuantos tags tiene este swagger. A partir de este momento estos tags son la base para construir
+el resto de cosas. Por cada tag se debe de crear lo siguiente:
+
+Genera las clases de dominio necesarias para representar las entidades en una arquitectura clean en swift. Cada entidad
+tiene que tener un fichero diferente. Las entidades no pueden ser codables ni debería de existir ninguna entidad que tenga
+contexto de api, por lo que adapta cualquiera que tenga referencia de api para crear una entidad de app abstracta.
+
 Además de estas entidades genera una clase por dominio con los casos de uso asociados a estas y su implementación,
-todos los casos de uso deben de estar agrupados por dominio.
-Crea el protocolo para el repositorio que tiene que tener el nombre acabado en Protocol.
-Cada uno de las clases o protocolos deben de estar en un bloque de código distinto. Encima del bloque tiene que
-indicarse el nombre del fichero (###DIRECTORIO/NOMBREFICHERO) y la carpeta a la que corresponde. Las carpetas son:
-Domain/Entities, Domain/UseCases, Domain/Repositories
-Quiero que todas las funciones sean con async await.
+todos los casos de uso deben de estar agrupados por tag.
+
+Crea el protocolo para el repositorio, las funciones del repositorio solo puede tener parámetros de entrada entidades
+de dominio.
+
+Cada uno de las clases o protocolos deben de estar en un bloque de código distinto. Encima del inicio del bloque tiene que
+indicarse el nombre del fichero (#####Directorio/NombreFichero) y la carpeta a la que corresponde. Las carpetas son:
+Domain/Entities, Domain/UseCases, Domain/Repositories. Dentro de cada carpeta crear otra carpeta con el tag que se esta
+evalueando y sus ficheros correspondientes
+
+Quiero que todas las funciones sean con async throws
+
+la estructura de carpetas debe seguir este esquema al igual que el nombre de cada fichero:
+
+
+├── Domain/
+    ├── Repository/
+    │   ├── Auth/
+    │       ├── AuthRepositoryProtocol
+    ├── usecase/
+        ├── Auth/
+            ├── AuthUseCase
