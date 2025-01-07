@@ -11,7 +11,7 @@ from driven.ai.chatgpt.processor import CodeProcessor
 
 
 class ChatGPTAdapter(AIRepositoryPort):
-    BASE_OUTPUT_PATH = "output_ios_clean_architecture"
+    BASE_OUTPUT_PATH = "output_clean_architecture"
 
     def __init__(self):
         self.client = OpenAI(
