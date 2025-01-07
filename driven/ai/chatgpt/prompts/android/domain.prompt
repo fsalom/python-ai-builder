@@ -1,13 +1,14 @@
 Primero de todo extrae cuantos tags tiene este swagger. A partir de este momento estos tags son la base para construir
 el resto de cosas. Por cada tag se debe de crear lo siguiente:
 
-Genera las clases de dominio necesarias para representar las entidades en una arquitectura clean en kotlin
+Genera las clases de dominio necesarias para representar las entidades en una arquitectura clean en kotlin. Cada entidad
+tiene que tener un fichero diferente.
 
 Además de estas entidades genera una clase por dominio con los casos de uso asociados a estas y su implementación,
 todos los casos de uso deben de estar agrupados por tag.
 Crea la interface para el repositorio.
 Cada uno de las clases o interfaces deben de estar en un bloque de código distinto. Encima del inicio del bloque tiene que
-indicarse el nombre del fichero (#####DIRECTORIO/NOMBREFICHERO) y la carpeta a la que corresponde. Las carpetas son:
+indicarse el nombre del fichero (#####Directorio/NombreFichero) y la carpeta a la que corresponde. Las carpetas son:
 Domain/Entities, Domain/UseCases, Domain/Repositories. Dentro de cada carpeta crear otra carpeta con el tag que se esta
 evalueando y sus ficheros correspondientes
 Quiero que todas las funciones sean con suspend.
